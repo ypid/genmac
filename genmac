@@ -43,6 +43,7 @@ USAGE =
 FULL_USAGE = USAGE + <<'end'
   -h        display this help text and exit
   -v        verbose mode, print debug messages and matching organizations
+  -m        set multicast address bit (default unicast address)
   -l        set locally administered bit (default universally administered)
   -u        output uppercase hex digits (default lowercase)
   -n num    generate this many MAC addresses (default 1)
@@ -58,6 +59,7 @@ OUI_OCTETS = %r{#{HEX_OCTET}-#{HEX_OCTET}-#{HEX_OCTET}}
 $verbose = false
 
 def main(argv = ARGV)
+  multicast = false
   locally_administered = false
   uppercase = false
   num_addresses = 1
@@ -66,6 +68,7 @@ def main(argv = ARGV)
   OptionParser.new do |opts|
     opts.on('-h', '--help')           { puts FULL_USAGE; return 0 }
     opts.on('-v', '--verbose')        { $verbose = true }
+    opts.on('-m', '--multicast')      { multicast = true }
     opts.on('-l', '--local')          { locally_administered = true }
     opts.on('-u', '--uppercase')      { uppercase = true }
     opts.on('-n NUM',  '--number')    { |arg| num_addresses = arg.to_i }
@@ -97,6 +100,11 @@ def main(argv = ARGV)
     else
       mac_octets = (1..3).collect { rand(256) }
       mac_octets[0] |= 0x02 if locally_administered
+    end
+    if multicast
+      mac_octets[0] |= 0x01
+    else
+      mac_octets[0] &= ~0x01
     end
     (1..3).each { mac_octets << rand(256) }
     mac = mac_octets.collect { |i| format % [i] }.join(delimiter)

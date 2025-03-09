@@ -79,7 +79,9 @@ In the MAC address printed to stdout, all values are random, except that
 the first octet has the second-least significant bit, which determines
 whether a MAC address is universally or locally administered, set to the
 former (universally administered), just as it would be for an actual
-manufacturer MAC address.
+manufacturer MAC address. Also in the first octet the first-least significant
+bit is set to 0 to denote a unicast MAC address instead of multicast address
+(1).
 
 To mark your MAC address as locally administered, which is conventional
 for addresses that are purposely fake or random, pass the `-l` or
@@ -87,6 +89,12 @@ for addresses that are purposely fake or random, pass the `-l` or
 
 ```sh
 $ genmac -l
+```
+
+To genreate a multicast MAC address, pass the `-m` or `--multicast` flag:
+
+```sh
+$ genmac -m
 ```
 
 To generate a large number of MAC addresses, pass `-n` with a numeric
